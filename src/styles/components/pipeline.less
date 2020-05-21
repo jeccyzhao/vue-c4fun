@@ -1,0 +1,377 @@
+@svg-sm: 12px; 
+@svg-default: 18px;
+@svg-large: 24px;
+
+.build-content(@border-radius: 30px) {
+  display: inline-block;
+  padding: 8px 10px 9px;
+  width: 100%;
+  border: 1px solid @border-color;
+  border-radius: @border-radius;
+  background-color: @white-light;
+
+  &:hover {
+    background-color: @gray-darker;
+    border: 1px solid @dropdown-toggle-active-border-color;
+    color: @gl-text-color;
+  }
+}
+
+// Pipeline graph
+
+.pipeline-tab-content {
+    display: flex;
+    width: 100%;
+    background-color: @gray-light;
+    padding: @gl-padding;
+    overflow: auto;
+  }
+  
+.pipeline-graph {
+    white-space: nowrap;
+    transition: max-height 0.3s, padding 0.3s;
+  
+    .stage-column-list,
+    .builds-container > ul {
+      padding: 0;
+    }
+  
+    a {
+      text-decoration: none;
+      color: @gl-text-color;
+    }
+  
+    svg {
+      vertical-align: middle;
+    }
+  
+    .stage-column {
+      display: inline-block;
+      vertical-align: top;
+  
+      &:not(:last-child) {
+        margin-right: 44px;
+      }
+  
+      &.left-margin {
+        &:not(:first-child) {
+          margin-left: 44px;
+  
+          .left-connector {
+            &::before {
+              content: '';
+              position: absolute;
+              top: 48%;
+              left: -44px;
+              border-top: 2px solid @border-color;
+              width: 44px;
+              height: 1px;
+            }
+          }
+        }
+      }
+  
+      &.no-margin {
+        margin: 0;
+      }
+  
+      li {
+        list-style: none;
+      }
+  
+      // when downstream pipelines are present, the last stage isn't the last column
+      &:last-child:not(.has-downstream) {
+        .build {
+          // Remove right connecting horizontal line from first build in last stage
+          &:first-child::after {
+            border: 0;
+          }
+          // Remove right curved connectors from all builds in last stage
+          &:not(:first-child)::after {
+            border: 0;
+          }
+          // Remove opposite curve
+          .curve::before {
+            display: none;
+          }
+        }
+      }
+  
+      // when upstream pipelines are present, the first stage isn't the first column
+      &:first-child:not(.has-upstream) {
+        .build {
+          // Remove left curved connectors from all builds in first stage
+          &:not(:first-child)::before {
+            border: 0;
+          }
+          // Remove opposite curve
+          .curve::after {
+            display: none;
+          }
+        }
+      }
+  
+      // Curve first child connecting lines in opposite direction
+      .curve {
+        display: none;
+  
+        &::before,
+        &::after {
+          content: '';
+          width: 21px;
+          height: 25px;
+          position: absolute;
+          top: -31px;
+          border-top: 2px solid @border-color;
+        }
+  
+        &::after {
+          left: -44px;
+          border-right: 2px solid @border-color;
+          border-radius: 0 20px;
+        }
+  
+        &::before {
+          right: -44px;
+          border-left: 2px solid @border-color;
+          border-radius: 20px 0 0;
+        }
+      }
+    }
+  
+    .stage-name {
+      margin: 0 0 15px 10px;
+      font-weight: @gl-font-weight-bold;
+      width: 176px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 2.2em;
+      text-align: center;
+    }
+  
+    
+
+    .build {
+      position: relative;
+      width: 186px;
+      margin-bottom: 10px;
+      white-space: normal;
+  
+      .ci-job-dropdown-container {
+        // override dropdown.scss
+        .dropdown-menu li button {
+          padding: 0;
+          text-align: center;
+        }
+      }
+  
+      // ensure .build-content has hover style when action-icon is hovered
+      .ci-job-dropdown-container:hover .build-content {
+        @extend .build-content:hover;
+      }
+  
+      .ci-status-icon svg {
+        height: 20px;
+        width: 20px;
+      }
+  
+      .dropdown-menu-toggle {
+        background-color: transparent;
+        border: 0;
+        padding: 0;
+  
+        &:focus {
+          outline: none;
+        }
+      }
+  
+      .build-content {
+        display: inline-block;
+        padding: 8px 10px 9px;
+        width: 100%;
+        border: 1px solid @border-color;
+        border-radius: 30px;
+        background-color: @white-light;
+
+        &:hover {
+          background-color: @gray-darker;
+          border: 1px solid @dropdown-toggle-active-border-color;
+          color: @gl-text-color;
+        }
+        //@include build-content();
+      }
+  
+      a.build-content:hover,
+      button.build-content:hover {
+        background-color: @gray-darker;
+        border: 1px solid #c7c7c7;
+      }
+  
+      // Connect first build in each stage with right horizontal line
+      &:first-child {
+        &::after {
+          content: '';
+          position: absolute;
+          top: 48%;
+          right: -48px;
+          border-top: 2px solid @border-color;
+          width: 48px;
+          height: 1px;
+        }
+      }
+  
+      // Connect each build (except for first) with curved lines
+      &:not(:first-child) {
+        &::after,
+        &::before {
+          content: '';
+          top: -49px;
+          position: absolute;
+          border-bottom: 2px solid @border-color;
+          width: 25px;
+          height: 69px;
+        }
+  
+        // Right connecting curves
+        &::after {
+          right: -25px;
+          border-right: 2px solid @border-color;
+          border-radius: 0 0 20px;
+        }
+  
+        // Left connecting curves
+        &::before {
+          left: -25px;
+          border-left: 2px solid @border-color;
+          border-radius: 0 0 0 20px;
+        }
+      }
+  
+      // Connect second build to first build with smaller curved line
+      &:nth-child(2) {
+        &::after,
+        &::before {
+          height: 29px;
+          top: -9px;
+        }
+  
+        .curve {
+          display: block;
+        }
+      }
+    }
+  }
+
+  
+.ci-build-text,
+.ci-status-text {
+  // font-weight: 200;
+}
+
+.mini-pipeline-graph-color(
+  @color-background-default,
+  @color-background-hover-focus,
+  @color-background-active,
+  @color-foreground-default,
+  @color-foreground-hover-focus,
+  @color-foreground-active
+) {
+  background-color: @color-background-default;
+  border-color: @color-foreground-default;
+
+  svg {
+    fill: @color-foreground-default;
+  }
+
+  &:hover,
+  &:focus {
+    background-color: @color-background-hover-focus;
+    border-color: @color-foreground-hover-focus;
+
+    svg {
+      fill: @color-foreground-hover-focus;
+    }
+  }
+
+  &:active {
+    background-color: @color-background-active;
+    border-color: @color-foreground-active;
+
+    svg {
+      fill: @color-foreground-active;
+    }
+  }
+
+  &:focus {
+    box-shadow: 0 0 4px 1px @blue-300;
+  }
+}
+
+.gl-pl-1 {
+  padding-left: 4px;
+}
+
+&.ci-status-icon-success {
+  .mini-pipeline-graph-color(@white, @green-100, @green-200, @green-500, @green-600, @green-700)
+}
+
+.text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.d-inline-block {
+  display: inline-block !important;
+}
+
+.align-bottom {
+  vertical-align: bottom !important;
+}
+
+.pipeline-mini {
+  .stage-column {
+    &:not(:last-child) {
+      margin-right: 5px;
+    }
+    &.left-margin {
+      &:not(:first-child) {
+        margin-left: 5px;
+        .left-connector {
+          &::before {
+            left: -10px;
+            width: 10px;
+          }
+        }
+      }
+    }
+    .curve::after {
+      left: -10px;
+    }
+  }
+  .build {
+    width: auto !important;
+    margin-bottom: 0px;
+    &:first-child {
+      &::after {
+        right: -10px;
+        width: 10px;
+        height: 1px;
+      }
+    }
+    .ci-status-icon  {
+      svg {
+        height: 12px;
+        width: 12px;
+      }
+    }
+    &:nth-child(2) {
+      &::after,
+      &::before {
+        height: 21px;
+        width: 10px;
+      }
+    }
+  }
+}
